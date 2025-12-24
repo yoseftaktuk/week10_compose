@@ -1,19 +1,19 @@
 import mysql.connector
 from dotenv import load_dotenv
 import os
-from sql import 
+
 
 load_dotenv()
 
 class Sql_manager:
     def __init__(self):
-        self.db = mysql.connector.connect(
-        host=os.getenv('DB_HOST'),
-        user=os.getenv("DB_USER"),
-        password=os.getenv('DB_PASSWORD'),
-        port=1433,
-        )
-
+        self.db = mysql.connector.connect(user=os.getenv('DB_USER'), 
+                password=os.getenv('DB_PASSWORD'),
+                host=os.getenv('DB_HOST'),
+                port=3306,
+                database=os.getenv('DB_name')
+                )
+        
 
     def select(self,sql): 
         mycursor = self.db.cursor()
@@ -22,21 +22,16 @@ class Sql_manager:
         return myresult
 
     
-    def update(self, sql):
+    def execute(self, sql):
         mycursor = self.db.cursor()
         mycursor.execute(sql)
         self.db.commit()
-        
-        
-    def insert(self, sql, val):
-        mycursor = self.db.cursor()
-        mycursor.execute(sql,val)
-        self.db.commit()
-        
-        
+    def test(self, sql, val):
+        self.db.cursor(sql, val)    
+
     def close(self):
         self.db.close()
 
 
 a = Sql_manager()
-a.insert('INSERT INTO chip (id, deposit) VALUES (%s, %s);',('1', '100'))
+# a.insert('INSERT INTO chip (id, deposit) VALUES (%s, %s);',('1', '100'))
