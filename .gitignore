@@ -140,7 +140,7 @@ celerybeat.pid
 .venv
 venv/
 ENV/
-env.bak/
+#env.bak/
 venv.bak/
 
 # Spyder project settings
