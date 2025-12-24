@@ -4,23 +4,25 @@ services:
   app:
     build: ./app
     ports:
-      - 8000:8000  
+      - 8000:80
     networks:
       - backend-network  
     depends_on:
       database:
-        condition: service_healthy  
+        condition: service_healthy
+    env_file:
+      - .env      
   database:
     image: mysql:8.0
     volumes:
       - mysql_data:/var/lib/mysql
-      - C:/Users/Yosef/vsc_project/week10_compose/sql/init.sql:/docker-entrypoint-initdb.d/init.sql  
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql  
     ports:
       - "3306:3306"      
     environment:
-      MYSQL_DATABASE: contacts_db
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_HOST_NAME: 'localhost'
+    env_file:
+      - .env
     networks:
       - backend-network  
     healthcheck:              

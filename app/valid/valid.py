@@ -10,6 +10,7 @@ def check_name(first_name):
             continue
     return True
 
+
 def check_number(phone_number):
     str_number = str(phone_number)
     for i in str_number:
