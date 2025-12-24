@@ -11,23 +11,26 @@ class Sql_manager:
                 password=os.getenv('DB_PASSWORD'),
                 host=os.getenv('DB_HOST'),
                 port=3306,
-                database=os.getenv('DB_name')
+                database=os.getenv('DB_NAME')
                 )
         
 
-    def select(self,sql): 
+    def select(self,sql: str): 
         mycursor = self.db.cursor()
         mycursor.execute(sql)
         myresult = mycursor.fetchall()      
         return myresult
 
     
-    def execute(self, sql):
+    def execute(self, sql: str):
         mycursor = self.db.cursor()
         mycursor.execute(sql)
         self.db.commit()
-    def test(self, sql, val):
-        self.db.cursor(sql, val)    
+
+    def send_sql(self, sql: str, val: tuple):
+        mycursor = self.db.cursor()
+        mycursor.execute(sql, val)
+        self.db.commit()    
 
     def close(self):
         self.db.close()

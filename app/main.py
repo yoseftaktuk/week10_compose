@@ -18,7 +18,6 @@ cruser = data_interactor.Sql_manager()
 
 @app.get('/contacts')
 def get_all_contacts():
-    print('5678')
     data = cruser.select('SELECT * FROM contacts')
     conects = Contact(data)
     return conects.convert_to_dict()
@@ -29,27 +28,29 @@ def get_all_contacts():
 def create_contact(item: Item):
 
     try:
-        #cruser.execute(f"INSERT INTO contacts (first_name, last_name, phone_number) VALUES ({item.first_name}, {item.last_name}, {item.phone_number})")
-        sql = "INSERT INTO customers (name, address) VALUES (%s, %s, %s)"
+        sql = "INSERT INTO contacts (first_name, last_name, phone_number) VALUES (%s, %s, %s)"
         val = (item.first_name, item.last_name, item.phone_number)
-        cruser.test(sql=sql, val=val)
+        cruser.send_sql(sql=sql, val=val)
         return {'The sending was successful.'}
     except ConnectionError:
         return {'post faild'}
 
-@app.put('/contacts/4')
-def update_contact(item: Item):
+@app.put('/contacts/')
+def update_contact(item: Item, id: int):
     try:
-        cruser.execute(f"UPDATE contacts set first_name = {item.first_name}, last_name = {item.last_name}, phone_number = {item.phone_number}  WHERE id = {item.id};")
+        sql = f"UPDATE contacts SET first_name = %s, last_name = %s, phone_number = %s WHERE id = %s;"
+        val = (item.first_name, item.last_name, item.phone_number, id)
+        cruser.send_sql(sql=sql, val=val)
         return {'The sending was successful.'} 
     except ConnectionError:
         return {'UPDATE faild'}
 
 
-@app.delete('/contacts/4')
-def delete_contact(id):
+@app.delete('/contacts/')
+def delete_contact(id: int):
     try:
-        cruser.execute(f"DELETE FROM table_name WHERE {id};")
+        sql = f"DELETE FROM contacts WHERE id = {id}"
+        cruser.execute(sql=sql)
         return {'The deletion was successful'}
     except ConnectionError:
         return {'DELETE faild'}
