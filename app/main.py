@@ -1,9 +1,8 @@
 from fastapi import FastAPI
 import uvicorn
 from pydantic import BaseModel, Field
-import data_interactor
-from contact import Contact
-
+from data_interactor import Contact
+import data_interactor as data_interactor
 
 app = FastAPI()
 
@@ -13,47 +12,30 @@ class Item(BaseModel):
     last_name: str
     phone_number: str
 
+qury = data_interactor.DatabaseService()
 
-cruser = data_interactor.Sql_manager()
 
 @app.get('/contacts')
 def get_all_contacts():
-    data = cruser.select('SELECT * FROM contacts')
-    conects = Contact(data)
-    return conects.convert_to_dict()
-    
+    return qury.get_all_contacts()
 
 
 @app.post('/contacts')
 def create_contact(item: Item):
-
-    try:
-        sql = "INSERT INTO contacts (first_name, last_name, phone_number) VALUES (%s, %s, %s)"
-        val = (item.first_name, item.last_name, item.phone_number)
-        cruser.send_sql(sql=sql, val=val)
-        return {'The sending was successful.'}
-    except ConnectionError:
-        return {'post faild'}
+    my_item = data_interactor.Contact(item)
+    item = my_item.convert_to_dict()
+    return qury.create_contact(item)
 
 @app.put('/contacts/')
 def update_contact(item: Item, id: int):
-    try:
-        sql = f"UPDATE contacts SET first_name = %s, last_name = %s, phone_number = %s WHERE id = %s;"
-        val = (item.first_name, item.last_name, item.phone_number, id)
-        cruser.send_sql(sql=sql, val=val)
-        return {'The sending was successful.'} 
-    except ConnectionError:
-        return {'UPDATE faild'}
+    my_item = data_interactor.Contact(item)
+    item = my_item.convert_to_dict()
+    return qury.update_contact(id, item)
 
 
 @app.delete('/contacts/')
 def delete_contact(id: int):
-    try:
-        sql = f"DELETE FROM contacts WHERE id = {id}"
-        cruser.execute(sql=sql)
-        return {'The deletion was successful'}
-    except ConnectionError:
-        return {'DELETE faild'}
+    return qury.delete_contact(id)
 
 if __name__ == "__main__":
     uvicorn.run('main:app', host="0.0.0.0", port=8000,reload=True)
