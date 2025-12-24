@@ -2,7 +2,7 @@ from fastapi import FastAPI
 import uvicorn
 from pydantic import BaseModel, Field
 from data_interactor import Contact
-import data_interactor as data_interactor
+import data_interactor 
 
 app = FastAPI()
 
