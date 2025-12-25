@@ -21,19 +21,25 @@ class Contact:
 class DatabaseService:
 
     def __init__(self):
-        self.db = mysql.connector.connect(
-            user=os.getenv('DB_USER'), 
-            password=os.getenv('DB_PASSWORD'),
-            host=os.getenv('DB_HOST'),
-            database=os.getenv('DB_NAME')
-            )
+        try:
+            self.db = mysql.connector.connect(
+                user=os.getenv('DB_USER'), 
+                password=os.getenv('DB_PASSWORD'),
+                host=os.getenv('DB_HOST'),
+                database=os.getenv('DB_NAME')
+                )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
 
     def get_all_contacts(self: str): 
-        mycursor = self.db.cursor()
-        mycursor.execute('SELECT * FROM contacts')
-        myresult = mycursor.fetchall()      
-        return myresult
-    
+        try:
+            mycursor = self.db.cursor()
+            mycursor.execute('SELECT * FROM contacts')
+            myresult = mycursor.fetchall()      
+            return myresult
+        except Exception as e:
+            raise HTTPException(status_code=404, detail=str(e))
+        
     def create_contact(self, item: dict):
         try:
             mycursor = self.db.cursor()
@@ -56,7 +62,7 @@ class DatabaseService:
             mycursor.execute(sql)
             mycursor = mycursor.fetchall()
             if mycursor:
-                sql = f"UPDATE contacts SET first_name = %s, last_name = %s, phone_number = %s WHERE id = %s;"
+                sql = """UPDATE contacts SET first_name = %s, last_name = %s, phone_number = %s WHERE id = %s;"""
                 val = (item['first_name'], item['last_name'], item['phone_number'], id)
                 mycursor.execute(sql, val)
                 self.db.commit()
