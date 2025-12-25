@@ -45,18 +45,23 @@ class DatabaseService:
             val = item['phone_number']
             mycursor.execute(sql , val)
             mycursor = mycursor.fetchall()
-            return {'The sending was successful.', mycursor}
+            return {"massege":"The sending was successful.", "id": mycursor}
         except Exception as e:
             raise HTTPException(status_code=409, detail=str(e))
         
     def update_contact(self, id: int , item: dict):
         try:
             mycursor = self.db.cursor()
-            sql = f"UPDATE contacts SET first_name = %s, last_name = %s, phone_number = %s WHERE id = %s;"
-            val = (item['first_name'], item['last_name'], item['phone_number'], id)
-            mycursor.execute(sql, val)
-            self.db.commit()
-            return {'The sending was successful.'} 
+            sql = f"SELECT * FROM contacts WHERE id = {id};"
+            mycursor.execute(sql)
+            mycursor = mycursor.fetchall()
+            if mycursor:
+                sql = f"UPDATE contacts SET first_name = %s, last_name = %s, phone_number = %s WHERE id = %s;"
+                val = (item['first_name'], item['last_name'], item['phone_number'], id)
+                mycursor.execute(sql, val)
+                self.db.commit()
+                return {'The sending was successful.'} 
+            return {'id not found'}
         except Exception as e:
             raise HTTPException(status_code=404, detail=str(e))
         
@@ -64,8 +69,14 @@ class DatabaseService:
     def delete_contact(self, id):
         try:
             mycursor = self.db.cursor()
-            sql = f"DELETE FROM contacts WHERE id = {id}"
+            sql = f"SELECT * FROM contacts WHERE id = {id};"
             mycursor.execute(sql)
-            return {'The deletion was successful'}
+            mycursor = mycursor.fetchall()
+            if mycursor:
+                mycursor = self.db.cursor()
+                sql = f"DELETE FROM contacts WHERE id = {id}"
+                mycursor.execute(sql)
+                return {'The deletion was successful'}
+            return {"id not found"}
         except Exception as e:
             raise HTTPException(status_code=404, detail=str(e))

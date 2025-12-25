@@ -26,14 +26,14 @@ def create_contact(item: Item):
     item = my_item.convert_to_dict()
     return qury.create_contact(item)
 
-@app.put('/contacts/')
+@app.put('/contacts/{id}')
 def update_contact(item: Item, id: int):
     my_item = data_interactor.Contact(item)
     item = my_item.convert_to_dict()
     return qury.update_contact(id, item)
 
 
-@app.delete('/contacts/')
+@app.delete('/contacts/{id}')
 def delete_contact(id: int):
     return qury.delete_contact(id)
 

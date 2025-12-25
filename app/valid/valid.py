@@ -20,5 +20,3 @@ def check_number(phone_number):
         except:
             return False    
         
-def check_if_phone_exists():
-    pass            
