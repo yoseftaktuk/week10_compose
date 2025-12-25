@@ -1,4 +1,5 @@
 import mysql.connector
+from fastapi import  HTTPException
 from dotenv import load_dotenv
 import os
 
@@ -40,9 +41,13 @@ class DatabaseService:
             val = (item['first_name'], item['last_name'], item['phone_number'])
             mycursor.execute(sql, val)
             self.db.commit()
-            return {'The sending was successful.'}
-        except ConnectionError:
-            return {'post faild'}
+            sql = f"SELECT id FROME contacts WHERE phone_number = %s"
+            val = item['phone_number']
+            mycursor.execute(sql , val)
+            mycursor = mycursor.fetchall()
+            return {'The sending was successful.', mycursor}
+        except Exception as e:
+            raise HTTPException(status_code=409, detail=str(e))
         
     def update_contact(self, id: int , item: dict):
         try:
@@ -52,8 +57,9 @@ class DatabaseService:
             mycursor.execute(sql, val)
             self.db.commit()
             return {'The sending was successful.'} 
-        except ConnectionError:
-            return {'UPDATE faild'}
+        except Exception as e:
+            raise HTTPException(status_code=404, detail=str(e))
+        
         
     def delete_contact(self, id):
         try:
@@ -61,5 +67,5 @@ class DatabaseService:
             sql = f"DELETE FROM contacts WHERE id = {id}"
             mycursor.execute(sql)
             return {'The deletion was successful'}
-        except ConnectionError:
-            return {'DELETE faild'}
+        except Exception as e:
+            raise HTTPException(status_code=404, detail=str(e))

@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI , HTTPException
 import uvicorn
 from pydantic import BaseModel, Field
 from data_interactor import Contact
