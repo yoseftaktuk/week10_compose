@@ -47,7 +47,7 @@ class DatabaseService:
             val = (item['first_name'], item['last_name'], item['phone_number'])
             mycursor.execute(sql, val)
             self.db.commit()
-            sql = f"SELECT id FROME contacts WHERE phone_number = %s"
+            sql = """SELECT id FROME contacts WHERE phone_number = %s"""
             val = item['phone_number']
             mycursor.execute(sql , val)
             mycursor = mycursor.fetchall()
